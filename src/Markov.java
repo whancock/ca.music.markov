@@ -15,9 +15,9 @@ public class Markov {
 
         List<String> sequence = new ArrayList();
         sequence.add("A3");
-        sequence.add("E3");
+        sequence.add("G3");
 
-        List<String> notes = generateSong(corpus, sequence, 30);
+        List<String> notes = generateSong(corpus, sequence, 50);
 
 
 
@@ -33,7 +33,7 @@ public class Markov {
         /*
          * now write the sequence into a midi file that can be played
          */
-        //SeqGen.writeSeq(sequence, "data/test_out_2.mid");
+        SeqGen.writeSeq(sequence, "data/test_out_2.mid");
 
     }
 
@@ -86,9 +86,13 @@ public class Markov {
 
             int curidx = sequence.size() - ngram;
 
-            String curNoteSeq = "";
-            for(int idx=curidx; idx < curidx + ngram; idx++)
-                curNoteSeq += sequence.get(idx);
+            List curNoteSeq = new ArrayList<String>();
+
+            //String curNoteSeq = "";
+            for(int idx=curidx; idx < curidx + ngram; idx++) {
+                curNoteSeq.add(sequence.get(idx));
+                //curNoteSeq += sequence.get(idx);
+            }
 
             String nextNote = getNextNote(curNoteSeq, probs);
 
@@ -104,11 +108,16 @@ public class Markov {
 
 
 
-    public static String getNextNote(String noteSeq, Map<String, Map> bagOfNotes) {
+    public static String getNextNote(List<String> noteSeq, Map<String, Map> bagOfNotes) {
+
+        String noteSeqTxt = "";
+        for(String note: noteSeq) {
+            noteSeqTxt += note;
+        }
 
         Integer max = 0;
         String maxNote = "";
-        Map<String, Integer> test = bagOfNotes.get(noteSeq);
+        Map<String, Integer> test = bagOfNotes.get(noteSeqTxt);
 
 
         if(test == null) {
@@ -121,7 +130,8 @@ public class Markov {
 
             Integer count = test.get(key);
 
-            if(count > max) {
+            //use the most probable key unless it's the same as the ones before
+            if(count > max && key != noteSeq.get(noteSeq.size() - 1)) {
                 max = count;
                 maxNote = key;
             }
