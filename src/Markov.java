@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by whancock on 10/22/15.
@@ -33,7 +30,7 @@ public class Markov {
         /*
          * now write the sequence into a midi file that can be played
          */
-        SeqGen.writeSeq(sequence, "data/test_out_2.mid");
+        SeqGen.writeSeq(sequence, "data/random_weighted_2.mid");
 
     }
 
@@ -126,9 +123,15 @@ public class Markov {
         }
 
 
+        List<String> possibleNotes = new ArrayList();
+
         for(String key: test.keySet()) {
 
             Integer count = test.get(key);
+
+            for(int idx=0; idx<count; idx++) {
+                possibleNotes.add(key);
+            }
 
             //use the most probable key unless it's the same as the ones before
             if(count > max && key != noteSeq.get(noteSeq.size() - 1)) {
@@ -137,7 +140,12 @@ public class Markov {
             }
         }
 
-        return maxNote;
+
+        Random generator = new Random();
+        int index = generator.nextInt(possibleNotes.size());
+        return possibleNotes.get(index);
+
+        //return maxNote;
     }
 
 }
